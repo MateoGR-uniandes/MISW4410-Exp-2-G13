@@ -16,7 +16,6 @@ from views.update_inventory import UpdateInventory
 def create_app():
     app = Flask(__name__)
 
-
     DB_USER = os.getenv("MYSQL_USER", "root")
     DB_PASS = os.getenv("MYSQL_PASSWORD", "password")
     DB_HOST = os.getenv("MYSQL_HOST", "localhost")
@@ -28,19 +27,31 @@ def create_app():
 
     db.init_app(app)
 
+    # Initialize database connection without blocking app startup
+    def initialize_database():
+        with app.app_context():
+            retries = 5
+            for i in range(retries):
+                try:
+                    db.create_all()
+                    app.logger.info("Database connected and models created.")
+                    break
+                except OperationalError as e:
+                    app.logger.warning(f"Database not ready, retrying ({i+1}/{retries})...")
+                    time.sleep(5)
+            else:
+                app.logger.error("Could not connect to database after several retries.")
+
+    # Use app.app_context() to push the context manually
     with app.app_context():
-        retries = 5
-        for i in range(retries):
-            try:
-                db.create_all()
-                print("[INFO] Database connected and models created.")
-                break
-            except OperationalError as e:
-                print(f"[WARN] Database not ready, retrying ({i+1}/{retries})...")
-                time.sleep(5)
-        else:
-            print("[ERROR] Could not connect to database after several retries.")
-            raise
+        try:
+            db.create_all()
+            app.logger.info("Database connected during startup.")
+        except OperationalError as e:
+            app.logger.warning("Database not ready during startup, will retry on first request.")
+            # Start a thread to keep trying in background
+            from threading import Thread
+            Thread(target=initialize_database, daemon=True).start()
 
     api = Api(app)
     api.add_resource(HealthCheck, '/ping')
@@ -54,6 +65,7 @@ def create_app():
 
     return app
 
+application = create_app()
+
 if __name__ == "__main__":
-    application = create_app()
     application.run(debug=True, host="0.0.0.0", port=5000)
