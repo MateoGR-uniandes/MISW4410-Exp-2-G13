@@ -1,6 +1,7 @@
 import os
 import time
 from flask import Flask
+from flask import jsonify
 from flask_restful import Api
 from sqlalchemy.exc import OperationalError
 from models.models import db
@@ -15,6 +16,10 @@ from views.update_inventory import UpdateInventory
 
 def create_app():
     app = Flask(__name__)
+
+    @app.route('/')
+    def home():
+        return jsonify({"status": "OK", "message": "Welcome to the Product Service"})
 
     DB_USER = os.getenv("MYSQL_USER", "root")
     DB_PASS = os.getenv("MYSQL_PASSWORD", "password")
