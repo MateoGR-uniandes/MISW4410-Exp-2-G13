@@ -7,13 +7,13 @@ class ProductService:
     @staticmethod
     def create_product(data):
         product = Product(
-            product_id=uuid.uuid4(),
-            name=data["name"],
-            description=data.get("description"),
-            category=data["category"],
-            price=float(data["price"]),
-            quantity=int(data["quantity"])
+            productcode=["productcode"],
+            productname=data["productname"],
+            brand=data.get("brand"),
+            costprice=float(data["costprice"]),
+            sellprice=float(data["sellprice"])
         )
+
         return ProductRepository.create_product(product)
 
     @staticmethod
@@ -25,25 +25,21 @@ class ProductService:
         return ProductRepository.get_all_products()
 
     @staticmethod
-    def get_products_by_category(category):
-        return ProductRepository.get_products_by_category(category)
-
-    @staticmethod
     def update_product(product_id, data):
         product = ProductRepository.get_product_by_id(product_id)
         if not product:
             return None
 
-        if "name" in data:
-            product.name = data["name"]
-        if "description" in data:
-            product.description = data["description"]
-        if "category" in data:
-            product.category = data["category"]
-        if "price" in data:
-            product.price = float(data["price"])
-        if "quantity" in data:
-            product.quantity = int(data["quantity"])
+        if "productcode" in data:
+            product.productcode = data["productcode"]
+        if "productname" in data:
+            product.productname = data["productname"]
+        if "brand" in data:
+            product.brand = data["brand"]
+        if "costprice" in data:
+            product.costprice = float(data["costprice"])
+        if "sellprice" in data:
+            product.sellprice = float(data["sellprice"])
 
         return ProductRepository.update_product(product)
 
@@ -56,5 +52,5 @@ class ProductService:
         return False
 
     @staticmethod
-    def update_inventory(product_id, quantity):
-        return ProductRepository.update_inventory(product_id, quantity)
+    def update_costs(product_id, costprice, sellprice):
+        return ProductRepository.update_costs(product_id, costprice, sellprice)

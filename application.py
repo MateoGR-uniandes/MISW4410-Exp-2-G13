@@ -6,22 +6,16 @@ from sqlalchemy.exc import OperationalError
 from models.models import db
 from views.health_check import HealthCheck
 from views.create_product import CreateProduct
-from views.get_product import GetProduct
-from views.get_products import GetProducts
-from views.get_by_category import GetProductsByCategory
-from views.update_product import UpdateProduct
-from views.delete_product import DeleteProduct
-from views.update_inventory import UpdateInventory
 
 def create_app():
     app = Flask(__name__)
 
 
     DB_USER = os.getenv("MYSQL_USER", "root")
-    DB_PASS = os.getenv("MYSQL_PASSWORD", "password")
+    DB_PASS = os.getenv("MYSQL_PASSWORD", "my-secret-pw")
     DB_HOST = os.getenv("MYSQL_HOST", "localhost")
     DB_PORT = os.getenv("MYSQL_PORT", "3306")
-    DB_NAME = os.getenv("MYSQL_DATABASE", "products")
+    DB_NAME = os.getenv("MYSQL_DATABASE", "inventory")
 
     app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -45,13 +39,7 @@ def create_app():
     api = Api(app)
     api.add_resource(HealthCheck, '/ping')
     api.add_resource(CreateProduct, '/products')
-    api.add_resource(GetProduct, '/products/<string:product_id>')
-    api.add_resource(GetProducts, '/products')
-    api.add_resource(GetProductsByCategory, '/products/category/<string:category>')
-    api.add_resource(UpdateProduct, '/products/<string:product_id>')
-    api.add_resource(DeleteProduct, '/products/<string:product_id>')
-    api.add_resource(UpdateInventory, '/products/<string:product_id>/inventory')
-
+    
     return app
 
 if __name__ == "__main__":

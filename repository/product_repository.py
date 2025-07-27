@@ -14,16 +14,12 @@ class ProductRepository:
             raise e
 
     @staticmethod
-    def get_product_by_id(product_id):
-        return Product.query.get(product_id)
+    def get_product_by_id(pid):
+        return Product.query.get(pid)
 
     @staticmethod
     def get_all_products():
         return Product.query.all()
-
-    @staticmethod
-    def get_products_by_category(category):
-        return Product.query.filter_by(category=category).all()
 
     @staticmethod
     def update_product(product):
@@ -44,10 +40,11 @@ class ProductRepository:
             raise e
 
     @staticmethod
-    def update_inventory(product_id, quantity):
-        product = Product.query.get(product_id)
+    def update_costs(pid, costprice, sellprice):
+        product = Product.query.get(pid)
         if product:
-            product.quantity = quantity
+            product.costprice = costprice
+            product.sellprice = sellprice
             try:
                 db.session.commit()
                 return product
