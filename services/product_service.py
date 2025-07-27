@@ -7,7 +7,7 @@ class ProductService:
     @staticmethod
     def create_product(data):
         product = Product(
-            productcode=["productcode"],
+            productcode=data["productcode"],
             productname=data["productname"],
             brand=data.get("brand"),
             costprice=float(data["costprice"]),
